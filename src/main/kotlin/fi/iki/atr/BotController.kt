@@ -38,14 +38,47 @@ class BotController {
         System.out.println("The map has " + items.size + " items")
         System.out.println("The map consists of " + map.tiles.size + " x " + map.tiles[0].length + " tiles")
 
-        val nextMove = Arrays.asList(Move.UP, Move.LEFT, Move.DOWN, Move.RIGHT)[Random().nextInt(4)]
-        return nextMove
+        return determineMove(myPlayer, map, items)
     }
 
+    private fun determineMove(myPlayer: Player, map: Map, items: Set<Item>): Move {
+
+        if (!myPlayer.usableItems.isEmpty()) {
+            return Move.USE
+        }
+
+        var targetItem =  items.sortedBy { item -> item.position.distance(myPlayer.position) }.
+                firstOrNull()
+
+        var target : Position
+        val goToExit = targetItem == null || myPlayer.money < 4000
+
+        if (goToExit) {
+            target = map.exit
+        } else {
+            if (targetItem != null) {
+                target = targetItem.position
+            } else {
+                return Move.PICK
+            }
+        }
+
+        if (myPlayer.position.x < target.x) {
+            return Move.RIGHT
+        } else if (myPlayer.position.x > target.x) {
+            return Move.LEFT
+        } else if (myPlayer.position.y < target.y) {
+            return Move.DOWN
+        } else if (myPlayer.position.y > target.y) {
+            return Move.UP
+        }
+        return Move.PICK
+    }
 
     data class Map(val width: Int,
               val height: Int,
-              val tiles: List<String>)
+              val tiles: List<String>,
+              val exit: Position)
 
     data class Player(val position: Position,
                       val name: String,
@@ -77,7 +110,9 @@ class BotController {
     }
 
     data class Position(val x: Int,
-                   val y: Int)
+                   val y: Int)      {
+        fun distance(another : Position) = Math.sqrt(Math.pow((another.x - x).toDouble(), 2.0) + Math.pow((another.y - y).toDouble(), 2.0))
+    }
 
     private class Registration(val playerName: String, val url: String)
 
