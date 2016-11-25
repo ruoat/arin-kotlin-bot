@@ -1,4 +1,4 @@
-package fi.solita.botsofbf
+package fi.iki.atr
 
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -67,7 +67,7 @@ class BotController {
     data class Item(val price: Int,
                     val position: Position,
                     val type: Type,
-                     val isUsable: Boolean) {
+                    val isUsable: Boolean) {
 
 
         enum class Type {
